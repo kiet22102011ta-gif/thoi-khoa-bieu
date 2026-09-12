@@ -538,14 +538,27 @@
   var state = { schedule: {} };
   DAYS.forEach(function(d){ state.schedule[d.key] = []; });
 
-  function loadSchedule(){
-    try{
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        var parsed = JSON.parse(raw);
-        applyParsedState(parsed);
-      }
-    }catch(e){ console.warn("Không đọc được dữ liệu cũ", e); }
+  // ===== SỬA ĐỔI QUAN TRỌNG: Tải dữ liệu từ file JSON =====
+  async function loadSchedule(){
+    try {
+      // Tự động tìm file thoi-khoa-bieu.json trên GitHub
+      const response = await fetch('thoi-khoa-bieu.json');
+      if (!response.ok) throw new Error("Không tìm thấy file JSON");
+      
+      const parsed = await response.json();
+      applyParsedState(parsed);
+      console.log("Đã tải dữ liệu từ thoi-khoa-bieu.json thành công!");
+    } catch (e) {
+      console.warn("Không tìm thấy file thoi-khoa-bieu.json hoặc lỗi fetch. Dùng dữ liệu trên máy.", e);
+      // Nếu không có file JSON, tự động lấy dữ liệu đã lưu trên máy (localStorage)
+      try{
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if(raw){
+          var parsed = JSON.parse(raw);
+          applyParsedState(parsed);
+        }
+      }catch(err){ console.warn("Không đọc được dữ liệu cũ", err); }
+    }
     renderAll();
   }
 
@@ -823,7 +836,6 @@
   document.getElementById("fTeacher").value = lesson ? lesson.teacher : "";
   fillSwatches(lesson ? lesson.color : COLORS[0]);
 
-  // THÊM DÒNG NÀY:
   document.getElementById("deleteInModalBtn").style.display = lesson ? "inline-flex" : "none";
 
   document.getElementById("overlay").classList.add("show");
@@ -948,7 +960,7 @@
 
   // ===== Init =====
   fillDaySelect();
-  loadSchedule();
+  loadSchedule(); // Gọi hàm tải dữ liệu từ JSON
   updateClock();
   setInterval(updateClock, 1000);
   setInterval(updateNextLesson, 1000*20);
