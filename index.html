@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thời Khóa Biểu Của Tớ 🌙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0d1117;
+    --bg-panel:#161b26;
+    --bg-panel-soft: rgba(30,36,50,0.7);
+    --card-bg: rgba(255,255,255,0.04);
+    --card-border: rgba(255,255,255,0.08);
+    --ink:#e7ecf5;
+    --ink-soft:#94a1b8;
+    --accent1:#5aa9c9;
+    --accent2:#63d4b0;
+    --accent3:#f2789a;
+    --accent4:#f4c15c;
+    --accent5:#b18aef;
+    --accent6:#6f8bf0;
+    --danger:#f2789a;
+    --shadow: 0 12px 32px rgba(0,0,0,0.45);
+    --radius: 18px;
+  }
+
+  *{box-sizing:border-box;}
+
+  html,body{
+    margin:0;padding:0;
+    min-height:100vh;
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+  }
+
+  body{
+    background:
+      radial-gradient(circle at 15% 10%, rgba(90,169,201,0.12), transparent 45%),
+      radial-gradient(circle at 85% 0%, rgba(177,138,239,0.12), transparent 40%),
+      radial-gradient(circle at 50% 100%, rgba(99,212,176,0.08), transparent 50%),
+      var(--bg-deep);
+    min-height:100vh;
+    padding-bottom:70px;
+  }
+
+  h1,h2,h3,.brand,.day-label{
+    font-family:'Baloo 2', cursive;
+  }
+
+  /* ===== Top bar ===== */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:26px 28px 10px;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .brand{
+    font-size:28px;
+    font-weight:800;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .brand .emoji{
+    font-size:30px;
+    animation: floaty 3.5s ease-in-out infinite;
+  }
+  @keyframes floaty{
+    0%,100%{ transform: translateY(0) rotate(0deg); }
+    50%{ transform: translateY(-6px) rotate(-6deg); }
+  }
+  .clock-box{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding:10px 18px;
+    border-radius:16px;
+    box-shadow: var(--shadow);
+    text-align:right;
+  }
+  .clock-box .time{ font-size:20px; font-weight:700; color:var(--accent1);}
+  .clock-box .date{ font-size:13px; color:var(--ink-soft); }
+
+  .container{
+    max-width:1500px;
+    margin:0 auto;
+    padding: 6px 24px 0;
+  }
+
+  /* ===== Next lesson hero ===== */
+  .next-card{
+    position:relative;
+    border-radius: var(--radius);
+    padding:20px 24px;
+    margin: 4px 0 22px;
+    background: linear-gradient(120deg, rgba(90,169,201,0.22), rgba(111,139,240,0.22));
+    border:1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    display:none;
+  }
+  .next-card.show{ display:block; }
+  .next-card.urgent{
+    background: linear-gradient(120deg, rgba(242,120,154,0.28), rgba(244,193,92,0.22));
+    animation: urgentPulse 1.6s infinite;
+  }
+  @keyframes urgentPulse{
+    0%,100%{ box-shadow: 0 0 0 0 rgba(242,120,154,0.35), var(--shadow); }
+    50%{ box-shadow: 0 0 0 8px rgba(242,120,154,0), var(--shadow); }
+  }
+  .next-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    background: rgba(255,255,255,0.08);
+    color: var(--ink);
+    padding:4px 11px;
+    border-radius:999px;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .next-tag .dot{
+    width:7px;height:7px;border-radius:50%;
+    background: var(--accent2);
+    box-shadow:0 0 0 0 rgba(99,212,176,0.7);
+    animation: dotPulse 1.6s infinite;
+  }
+  @keyframes dotPulse{
+    0%{ box-shadow:0 0 0 0 rgba(99,212,176,0.55); }
+    70%{ box-shadow:0 0 0 9px rgba(99,212,176,0); }
+    100%{ box-shadow:0 0 0 0 rgba(99,212,176,0); }
+  }
+  .next-main{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .next-title{
+    font-size:24px;
+    font-weight:800;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .next-meta{
+    font-size:14px;
+    color: var(--ink-soft);
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .next-meta span{ display:flex; align-items:center; gap:6px; }
+  .next-countdown{ text-align:right; }
+  .next-countdown .num{
+    font-size:30px;
+    font-weight:800;
+    color: var(--accent2);
+  }
+  .next-countdown.urgent .num{ color: var(--accent3); }
+  .next-countdown .lbl{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color: var(--ink-soft);
+  }
+
+  /* ===== Toolbar ===== */
+  .toolbar{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin: 6px 0 22px;
+  }
+  .btn{
+    border:none;
+    cursor:pointer;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    font-size:14px;
+    padding:11px 18px;
+    border-radius:12px;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    box-shadow: var(--shadow);
+  }
+  .btn:hover{ transform: translateY(-2px); }
+  .btn:active{ transform: translateY(0); }
+  .btn-primary{ background: linear-gradient(120deg, var(--accent1), var(--accent6)); color:white; }
+  .btn-ghost{ background: var(--card-bg); border:1px solid var(--card-border); color:var(--ink); box-shadow:none; }
+  .btn-danger{ background: linear-gradient(120deg, var(--accent3), #d94f75); color:white; }
+  input[type="file"]{ display:none; }
+
+  /* ===== Grid of days ===== */
+  .board{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap:16px;
+  }
+  .day-col{
+    background: var(--bg-panel-soft);
+    border:1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding:14px;
+    min-height:180px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    box-shadow: var(--shadow);
+  }
+  .day-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-bottom:8px;
+    border-bottom:1px dashed var(--card-border);
+  }
+  .day-label{
+    font-size:18px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .day-sub{
+    font-size:11.5px;
+    color:var(--ink-soft);
+  }
+  .add-mini{
+    width:30px;height:30px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    background: var(--card-bg);
+    border:1px solid var(--card-border);
+    color: var(--ink);
+    font-size:18px;
+    line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .add-mini:hover{ background: var(--accent1); color:#fff; transform: scale(1.06); }
+
+  .empty-day{
+    color: var(--ink-soft);
+    font-size:12.5px;
+    text-align:center;
+    padding: 18px 4px;
+    opacity:0.7;
+  }
+
+  .slot-group{ display:flex; flex-direction:column; gap:8px; }
+  .slot-heading{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color: var(--ink-soft);
+    margin-top:2px;
+  }
+  .slot-heading .line{
+    flex:1;
+    height:1px;
+    background: var(--card-border);
+  }
+  .slot-empty{
+    font-size:11.5px;
+    color: var(--ink-soft);
+    opacity:0.55;
+    padding:2px 2px 4px;
+  }
+
+  /* ===== Lesson card ===== */
+  .lesson{
+    position:relative;
+    border-radius:14px;
+    padding:10px 12px 10px 14px;
+    color:#0d1117;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    cursor:pointer;
+    transition: transform 0.15s ease;
+  }
+  .lesson:hover{ transform: translateY(-2px); }
+  .lesson.is-next{
+    outline: 3px solid rgba(255,255,255,0.65);
+    outline-offset: 2px;
+  }
+  .lesson .time{
+    font-size:11.5px;
+    font-weight:700;
+    opacity:0.75;
+    margin-bottom:2px;
+  }
+  .lesson .subject{
+    font-family:'Baloo 2',cursive;
+    font-size:15.5px;
+    font-weight:700;
+    line-height:1.2;
+    margin-bottom:2px;
+  }
+  .lesson .meta{
+    font-size:11.5px;
+    opacity:0.8;
+  }
+  .lesson .del{
+    position:absolute;
+    top:6px; right:6px;
+    width:20px;height:20px;
+    border-radius:50%;
+    border:none;
+    background: rgba(0,0,0,0.15);
+    color:#0d1117;
+    font-size:12px;
+    line-height:1;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;
+    transition: opacity 0.15s ease;
+  }
+  .lesson:hover .del{ opacity:1; }
+
+  /* palette rotation for lessons without explicit color */
+  .c1{ background: var(--accent1); }
+  .c2{ background: var(--accent2); }
+  .c3{ background: var(--accent3); color:#3a0d1c; }
+  .c4{ background: var(--accent4); }
+  .c5{ background: var(--accent5); }
+  .c6{ background: var(--accent6); color:#0d1130; }
+
+  /* ===== Modal ===== */
+  .overlay{
+    position:fixed; inset:0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(3px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:16px;
+  }
+  .overlay.show{ display:flex; }
+  .modal{
+    background: var(--bg-panel);
+    border:1px solid var(--card-border);
+    border-radius:20px;
+    width:100%;
+    max-width:420px;
+    padding:22px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+  }
+  .modal h3{
+    margin:0 0 16px;
+    font-size:20px;
+    color:var(--ink);
+  }
+  .field{
+    margin-bottom:12px;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .field label{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    font-weight:700;
+  }
+  .field input, .field select{
+    background: #0d1117;
+    border:1px solid var(--card-border);
+    color:var(--ink);
+    padding:10px 12px;
+    border-radius:10px;
+    font-family:'Quicksand',sans-serif;
+    font-size:14px;
+    outline:none;
+  }
+  .field input:focus, .field select:focus{ border-color: var(--accent1); }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .swatches{ display:flex; gap:8px; margin-top:2px; }
+  .swatch{
+    width:26px;height:26px;border-radius:50%;
+    cursor:pointer; border:2px solid transparent;
+  }
+  .swatch.active{ border-color:#fff; }
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    margin-top:18px;
+  }
+
+  .toast{
+    position:fixed;
+    bottom:22px; left:50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--bg-panel);
+    border:1px solid var(--card-border);
+    color:var(--ink);
+    padding:12px 18px;
+    border-radius:14px;
+    box-shadow: var(--shadow);
+    font-size:14px;
+    display:flex; align-items:center; gap:8px;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index:60;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width:560px){
+    .topbar{ padding:18px 16px 6px; }
+    .container{ padding: 6px 14px 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="emoji">🌙</span> Thời Khóa Biểu Của Tớ</div>
+  <div class="clock-box">
+    <div class="time" id="clockTime">--:--</div>
+    <div class="date" id="clockDate">-- , --/--/----</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="next-card" id="nextCard">
+    <div class="next-tag"><span class="dot"></span> Buổi học sắp tới</div>
+    <div class="next-main">
+      <div>
+        <div class="next-title" id="nextTitle">—</div>
+        <div class="next-meta" id="nextMeta"></div>
+      </div>
+      <div class="next-countdown" id="nextCountdown">
+        <div class="num" id="nextNum">--</div>
+        <div class="lbl" id="nextLbl">còn lại</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button class="btn btn-primary" id="addBtn">＋ Thêm buổi học</button>
+    <button class="btn btn-ghost" id="exportBtn">⬇️ Xuất JSON</button>
+    <button class="btn btn-ghost" id="importBtn">⬆️ Nhập JSON</button>
+    <input type="file" id="importFile" accept="application/json">
+    <button class="btn btn-ghost" id="notifyBtn">🔔 Bật thông báo</button>
+    <button class="btn btn-danger" id="clearBtn">🗑️ Xoá tất cả</button>
+  </div>
+
+  <div class="board" id="board"></div>
+</div>
+
+<!-- Modal thêm/sửa -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h3 id="modalTitle">Thêm buổi học</h3>
+    <input type="hidden" id="editId">
+
+    <div class="field">
+      <label>Thứ</label>
+      <select id="fDay"></select>
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Bắt đầu</label>
+        <input type="time" id="fStart">
+      </div>
+      <div class="field">
+        <label>Kết thúc</label>
+        <input type="time" id="fEnd">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Môn học</label>
+      <input type="text" id="fSubject" placeholder="VD: Giải tích 1">
+    </div>
+
+    <div class="row2">
+      <div class="field">
+        <label>Phòng học</label>
+        <input type="text" id="fRoom" placeholder="VD: A2-203">
+      </div>
+      <div class="field">
+        <label>Giảng viên</label>
+        <input type="text" id="fTeacher" placeholder="VD: Cô Lan">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Màu thẻ</label>
+      <div class="swatches" id="swatches"></div>
+    </div>
+
+    <div class="modal-actions">
+  <button class="btn btn-danger" id="deleteInModalBtn" style="display:none; margin-right:auto;">🗑️ Xoá</button>
+  <button class="btn btn-ghost" id="cancelBtn">Huỷ</button>
+  <button class="btn btn-primary" id="saveBtn">Lưu lại</button>
+</div>
+  </div>
+</div>
+
+<div class="toast" id="toast">✅ Đã lưu</div>
+
+<script>
+(function(){
+  var DAYS = [
+    {key:"t2", label:"Thứ 2"},
+    {key:"t3", label:"Thứ 3"},
+    {key:"t4", label:"Thứ 4"},
+    {key:"t5", label:"Thứ 5"},
+    {key:"t6", label:"Thứ 6"},
+    {key:"t7", label:"Thứ 7"},
+    {key:"cn", label:"Chủ nhật"}
+  ];
+  var COLORS = ["c1","c2","c3","c4","c5","c6"];
+  var STORAGE_KEY = "tkb-toi-mau-toi-v1";
+  var SLOTS = [
+    { key:"sang", label:"☀️ Buổi sáng", from:0,    to:12*60 },
+    { key:"chieu", label:"🌤️ Buổi chiều", from:12*60, to:17*60 },
+    { key:"toi", label:"🌙 Buổi tối", from:17*60, to:24*60+1 }
+  ];
+
+  var state = { schedule: {} };
+  DAYS.forEach(function(d){ state.schedule[d.key] = []; });
+
+  function loadSchedule(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        applyParsedState(parsed);
+      }
+    }catch(e){ console.warn("Không đọc được dữ liệu cũ", e); }
+    renderAll();
+  }
+
+  function applyParsedState(parsed){
+    DAYS.forEach(function(d){
+      state.schedule[d.key] = (parsed && parsed[d.key]) ? parsed[d.key] : [];
+    });
+  }
+
+  function saveSchedule(){
+    try{
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.schedule));
+    }catch(e){ console.warn("Không lưu được", e); }
+  }
+
+  function uid(){ return "l_" + Math.random().toString(36).slice(2,9); }
+
+  function timeToMinutes(t){
+    if(!t) return 0;
+    var parts = t.split(":");
+    return parseInt(parts[0],10)*60 + parseInt(parts[1],10);
+  }
+
+  function fillDaySelect(){
+    var sel = document.getElementById("fDay");
+    sel.innerHTML = "";
+    DAYS.forEach(function(d){
+      var opt = document.createElement("option");
+      opt.value = d.key;
+      opt.textContent = d.label;
+      sel.appendChild(opt);
+    });
+  }
+
+  function fillSwatches(selected){
+    var wrap = document.getElementById("swatches");
+    wrap.innerHTML = "";
+    COLORS.forEach(function(c){
+      var s = document.createElement("div");
+      s.className = "swatch " + c + (c === selected ? " active" : "");
+      s.dataset.color = c;
+      s.style.background = getComputedStyle(document.documentElement).getPropertyValue(
+        c === "c1" ? "--accent1" :
+        c === "c2" ? "--accent2" :
+        c === "c3" ? "--accent3" :
+        c === "c4" ? "--accent4" :
+        c === "c5" ? "--accent5" : "--accent6"
+      );
+      s.addEventListener("click", function(){
+        wrap.querySelectorAll(".swatch").forEach(function(el){ el.classList.remove("active"); });
+        s.classList.add("active");
+        wrap.dataset.selected = c;
+      });
+      wrap.appendChild(s);
+    });
+    wrap.dataset.selected = selected || COLORS[0];
+  }
+
+  function renderAll(){
+    var board = document.getElementById("board");
+    board.innerHTML = "";
+    DAYS.forEach(function(d){
+      var col = document.createElement("div");
+      col.className = "day-col";
+
+      var header = document.createElement("div");
+      header.className = "day-header";
+      var count = state.schedule[d.key].length;
+      header.innerHTML =
+        '<div><div class="day-label">' + d.label + '</div>' +
+        '<div class="day-sub">' + count + ' buổi học</div></div>';
+      var addMini = document.createElement("button");
+      addMini.className = "add-mini";
+      addMini.textContent = "+";
+      addMini.title = "Thêm vào " + d.label;
+      addMini.addEventListener("click", function(){ openModal(null, d.key); });
+      header.appendChild(addMini);
+      col.appendChild(header);
+
+      var lessons = state.schedule[d.key].slice().sort(function(a,b){
+        return timeToMinutes(a.start) - timeToMinutes(b.start);
+      });
+
+      if(lessons.length === 0){
+        var empty = document.createElement("div");
+        empty.className = "empty-day";
+        empty.textContent = "Chưa có lịch học ✨";
+        col.appendChild(empty);
+      } else {
+        SLOTS.forEach(function(slot){
+          var slotLessons = lessons.filter(function(l){
+            var m = timeToMinutes(l.start);
+            return m >= slot.from && m < slot.to;
+          });
+          if(slotLessons.length === 0) return;
+
+          var group = document.createElement("div");
+          group.className = "slot-group";
+
+          var heading = document.createElement("div");
+          heading.className = "slot-heading";
+          heading.innerHTML = '<span>'+slot.label+'</span><span class="line"></span>';
+          group.appendChild(heading);
+
+          slotLessons.forEach(function(l, idx){
+            var card = document.createElement("div");
+            var colorClass = l.color || COLORS[idx % COLORS.length];
+            card.className = "lesson " + colorClass;
+            card.dataset.dayKey = d.key;
+            card.dataset.lessonId = l.id;
+            card.innerHTML =
+              '<button class="del" title="Xoá">✕</button>' +
+              '<div class="time">' + (l.start||"") + ' - ' + (l.end||"") + '</div>' +
+              '<div class="subject">' + escapeHtml(l.subject || "(Chưa đặt tên)") + '</div>' +
+              '<div class="meta">' + [l.room, l.teacher].filter(Boolean).map(escapeHtml).join(" · ") + '</div>';
+
+            card.addEventListener("click", function(e){
+              if(e.target.classList.contains("del")) return;
+              openModal(l, d.key);
+            });
+            card.querySelector(".del").addEventListener("click", function(e){
+              e.stopPropagation();
+              deleteLesson(d.key, l.id);
+            });
+            group.appendChild(card);
+          });
+
+          col.appendChild(group);
+        });
+      }
+
+      board.appendChild(col);
+    });
+
+    updateNextLesson();
+  }
+
+  // ===== Buổi học sắp tới & thông báo =====
+  var DAY_INDEX = { "cn":0, "t2":1, "t3":2, "t4":3, "t5":4, "t6":5, "t7":6 };
+  var notifiedKeys = {};
+  try{ notifiedKeys = JSON.parse(sessionStorage.getItem("tkb-notified") || "{}"); }catch(e){}
+
+  function saveNotified(){
+    try{ sessionStorage.setItem("tkb-notified", JSON.stringify(notifiedKeys)); }catch(e){}
+  }
+
+  function getNextLesson(){
+    var now = new Date();
+    var best = null;
+    var bestDate = null;
+
+    DAYS.forEach(function(d){
+      state.schedule[d.key].forEach(function(l){
+        if(!l.start) return;
+        var targetDow = DAY_INDEX[d.key];
+        for(var offset = 0; offset <= 7; offset++){
+          var candidate = new Date(now);
+          candidate.setHours(0,0,0,0);
+          candidate.setDate(candidate.getDate() + offset);
+          if(candidate.getDay() !== targetDow) continue;
+          var parts = l.start.split(":");
+          candidate.setHours(parseInt(parts[0],10), parseInt(parts[1],10), 0, 0);
+          if(candidate.getTime() >= now.getTime()){
+            if(!bestDate || candidate.getTime() < bestDate.getTime()){
+              bestDate = candidate;
+              best = { lesson:l, dayKey:d.key, dayLabel:d.label, dateObj:candidate };
+            }
+            break;
+          }
+        }
+      });
+    });
+    return best;
+  }
+
+  function formatCountdown(ms){
+    var totalMin = Math.max(0, Math.round(ms / 60000));
+    var days = Math.floor(totalMin / (60*24));
+    var hours = Math.floor((totalMin % (60*24)) / 60);
+    var mins = totalMin % 60;
+    if(days > 0) return { num: days, lbl: days === 1 ? "ngày nữa" : "ngày nữa" };
+    if(hours > 0) return { num: hours + "h" + String(mins).padStart(2,"0"), lbl: "còn lại" };
+    return { num: mins, lbl: "phút nữa" };
+  }
+
+  function updateNextLesson(){
+    var card = document.getElementById("nextCard");
+    var next = getNextLesson();
+
+    document.querySelectorAll(".lesson.is-next").forEach(function(el){ el.classList.remove("is-next"); });
+
+    if(!next){
+      card.classList.remove("show");
+      return;
+    }
+
+    card.classList.add("show");
+    var l = next.lesson;
+    var diffMs = next.dateObj.getTime() - Date.now();
+    var isToday = next.dateObj.toDateString() === new Date().toDateString();
+    var totalMin = diffMs / 60000;
+
+    document.getElementById("nextTitle").textContent = l.subject || "(Chưa đặt tên)";
+    var metaBits = [next.dayLabel + " · " + (l.start||"") + "-" + (l.end||"")];
+    if(l.room) metaBits.push("📍 " + l.room);
+    if(l.teacher) metaBits.push("👤 " + l.teacher);
+    document.getElementById("nextMeta").innerHTML = metaBits.map(function(m){ return "<span>"+escapeHtml(m)+"</span>"; }).join("");
+
+    var cd = formatCountdown(diffMs);
+    document.getElementById("nextNum").textContent = cd.num;
+    document.getElementById("nextLbl").textContent = cd.lbl;
+
+    var urgent = isToday && totalMin <= 30;
+    card.classList.toggle("urgent", urgent);
+    document.getElementById("nextCountdown").classList.toggle("urgent", urgent);
+
+    // đánh dấu thẻ tương ứng trong bảng
+    var sel = '.lesson[data-day-key="'+next.dayKey+'"][data-lesson-id="'+l.id+'"]';
+    var cardEl = document.querySelector(sel);
+    if(cardEl) cardEl.classList.add("is-next");
+
+    // gửi thông báo khi còn <= 15 phút và chưa từng thông báo cho buổi này hôm nay
+    var notifyKey = l.id + "_" + next.dateObj.toDateString();
+    if(isToday && totalMin <= 30 && totalMin > 0 && !notifiedKeys[notifyKey]){
+      notifiedKeys[notifyKey] = true;
+      saveNotified();
+      showToast("🔔 Sắp tới giờ: " + (l.subject||"buổi học") + " lúc " + l.start);
+      sendBrowserNotification(l, next);
+    }
+  }
+
+  function sendBrowserNotification(l, next){
+    if(!("Notification" in window)) return;
+    if(Notification.permission !== "granted") return;
+    try{
+      new Notification("📚 Sắp đến giờ học: " + (l.subject||""), {
+        body: next.dayLabel + " · " + (l.start||"") + "-" + (l.end||"") + (l.room ? " · Phòng " + l.room : ""),
+        tag: l.id
+      });
+    }catch(e){ console.warn("Không gửi được thông báo", e); }
+  }
+
+  function requestNotifyPermission(){
+    if(!("Notification" in window)){
+      showToast("⚠️ Trình duyệt không hỗ trợ thông báo");
+      return;
+    }
+    if(Notification.permission === "granted"){
+      showToast("🔔 Thông báo đã được bật rồi");
+      return;
+    }
+    Notification.requestPermission().then(function(perm){
+      if(perm === "granted"){
+        showToast("✅ Đã bật thông báo buổi học");
+      } else {
+        showToast("🔕 Bạn đã từ chối nhận thông báo");
+      }
+    });
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, function(c){
+      return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];
+    });
+  }
+
+  function openModal(lesson, dayKey){
+  document.getElementById("modalTitle").textContent = lesson ? "Sửa buổi học" : "Thêm buổi học";
+  document.getElementById("editId").value = lesson ? lesson.id : "";
+  document.getElementById("fDay").value = dayKey || DAYS[0].key;
+  document.getElementById("fStart").value = lesson ? lesson.start : "";
+  document.getElementById("fEnd").value = lesson ? lesson.end : "";
+  document.getElementById("fSubject").value = lesson ? lesson.subject : "";
+  document.getElementById("fRoom").value = lesson ? lesson.room : "";
+  document.getElementById("fTeacher").value = lesson ? lesson.teacher : "";
+  fillSwatches(lesson ? lesson.color : COLORS[0]);
+
+  // THÊM DÒNG NÀY:
+  document.getElementById("deleteInModalBtn").style.display = lesson ? "inline-flex" : "none";
+
+  document.getElementById("overlay").classList.add("show");
+}
+
+  function closeModal(){
+    document.getElementById("overlay").classList.remove("show");
+  }
+
+  function deleteLesson(dayKey, id){
+    state.schedule[dayKey] = state.schedule[dayKey].filter(function(l){ return l.id !== id; });
+    saveSchedule();
+    renderAll();
+    showToast("🗑️ Đã xoá buổi học");
+  }
+
+  function showToast(msg){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(showToast._tm);
+    showToast._tm = setTimeout(function(){ t.classList.remove("show"); }, 1800);
+  }
+
+  function updateClock(){
+    var now = new Date();
+    var hh = String(now.getHours()).padStart(2,"0");
+    var mm = String(now.getMinutes()).padStart(2,"0");
+    document.getElementById("clockTime").textContent = hh + ":" + mm;
+    var days = ["Chủ nhật","Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7"];
+    var dd = String(now.getDate()).padStart(2,"0");
+    var mo = String(now.getMonth()+1).padStart(2,"0");
+    document.getElementById("clockDate").textContent = days[now.getDay()] + ", " + dd + "/" + mo + "/" + now.getFullYear();
+  }
+
+  // ===== Events =====
+  document.getElementById("addBtn").addEventListener("click", function(){ openModal(null, DAYS[0].key); });
+  document.getElementById("cancelBtn").addEventListener("click", closeModal);
+  document.getElementById("overlay").addEventListener("click", function(e){
+    if(e.target.id === "overlay") closeModal();
+  });
+
+  document.getElementById("saveBtn").addEventListener("click", function(){
+    var dayKey = document.getElementById("fDay").value;
+    var subject = document.getElementById("fSubject").value.trim();
+    if(!subject){
+      showToast("⚠️ Nhập tên môn học nhé");
+      return;
+    }
+    var editId = document.getElementById("editId").value;
+    var color = document.getElementById("swatches").dataset.selected;
+
+    var lessonData = {
+      id: editId || uid(),
+      start: document.getElementById("fStart").value,
+      end: document.getElementById("fEnd").value,
+      subject: subject,
+      room: document.getElementById("fRoom").value.trim(),
+      teacher: document.getElementById("fTeacher").value.trim(),
+      color: color
+    };
+
+    if(editId){
+      // Xoá bản cũ khỏi mọi ngày rồi thêm bản mới (phòng trường hợp đổi thứ)
+      DAYS.forEach(function(d){
+        state.schedule[d.key] = state.schedule[d.key].filter(function(l){ return l.id !== editId; });
+      });
+    }
+    state.schedule[dayKey].push(lessonData);
+
+    saveSchedule();
+    renderAll();
+    closeModal();
+    showToast("✅ Đã lưu buổi học");
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", function(){
+    var blob = new Blob([JSON.stringify(state.schedule, null, 2)], {type:"application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "thoi-khoa-bieu.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast("⬇️ Đã xuất file JSON");
+  });
+
+  document.getElementById("importBtn").addEventListener("click", function(){
+    document.getElementById("importFile").click();
+  });
+  document.getElementById("importFile").addEventListener("change", function(e){
+    var file = e.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(evt){
+      try{
+        var parsed = JSON.parse(evt.target.result);
+        applyParsedState(parsed);
+        saveSchedule();
+        renderAll();
+        showToast("⬆️ Đã nhập thời khóa biểu!");
+      }catch(err){
+        showToast("⚠️ File không hợp lệ");
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = "";
+  });
+
+  document.getElementById("notifyBtn").addEventListener("click", requestNotifyPermission);
+
+  document.getElementById("clearBtn").addEventListener("click", function(){
+    if(confirm("Bạn chắc chắn muốn xoá toàn bộ thời khóa biểu?")){
+      DAYS.forEach(function(d){ state.schedule[d.key] = []; });
+      saveSchedule();
+      renderAll();
+      showToast("🗑️ Đã xoá toàn bộ lịch học");
+    }
+  });
+
+  // ===== Init =====
+  fillDaySelect();
+  loadSchedule();
+  updateClock();
+  setInterval(updateClock, 1000);
+  setInterval(updateNextLesson, 1000*20);
+})();
+</script>
+</body>
+</html>
