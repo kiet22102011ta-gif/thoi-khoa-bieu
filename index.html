@@ -93,6 +93,88 @@
     padding: 6px 24px 0;
   }
 
+  /* ============ CARD: BUỔI HỌC HIỆN TẠI ============ */
+  .current-card{
+    position:relative;
+    border-radius: var(--radius);
+    padding:20px 24px;
+    margin: 4px 0 16px;
+    background: linear-gradient(120deg, rgba(99,212,176,0.24), rgba(90,169,201,0.20));
+    border:1px solid var(--card-border);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+  }
+  .current-card.empty{
+    background: linear-gradient(120deg, rgba(148,161,184,0.10), rgba(148,161,184,0.05));
+  }
+  .current-tag{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.5px;
+    background: rgba(255,255,255,0.08);
+    color: var(--ink);
+    padding:4px 11px;
+    border-radius:999px;
+    text-transform:uppercase;
+    margin-bottom:10px;
+  }
+  .current-tag .dot{
+    width:7px;height:7px;border-radius:50%;
+    background: var(--accent2);
+    box-shadow:0 0 0 0 rgba(99,212,176,0.7);
+    animation: dotPulse 1.6s infinite;
+  }
+  .current-card.empty .current-tag .dot{
+    background: var(--ink-soft);
+    animation:none;
+    box-shadow:none;
+  }
+  .current-main{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .current-title{
+    font-size:24px;
+    font-weight:800;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .current-card.empty .current-title{
+    color: var(--ink-soft);
+    font-weight:600;
+  }
+  .current-meta{
+    font-size:14px;
+    color: var(--ink-soft);
+    display:flex;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .current-meta span{ display:flex; align-items:center; gap:6px; }
+  .current-progress{ text-align:right; }
+  .current-progress .num{
+    font-size:30px;
+    font-weight:800;
+    color: var(--accent2);
+  }
+  .current-card.empty .current-progress .num{
+    color: var(--ink-soft);
+    opacity:0.6;
+  }
+  .current-progress .lbl{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.5px;
+    color: var(--ink-soft);
+  }
+
+  /* ============ CARD: BUỔI HỌC SẮP TỚI ============ */
   .next-card{
     position:relative;
     border-radius: var(--radius);
@@ -287,6 +369,15 @@
     outline: 3px solid rgba(255,255,255,0.65);
     outline-offset: 2px;
   }
+  .lesson.is-current{
+    outline: 3px solid rgba(99,212,176,0.95);
+    outline-offset: 2px;
+    animation: currentGlow 2s infinite;
+  }
+  @keyframes currentGlow{
+    0%,100%{ box-shadow: 0 6px 16px rgba(0,0,0,0.25), 0 0 0 0 rgba(99,212,176,0.55); }
+    50%{ box-shadow: 0 6px 16px rgba(0,0,0,0.25), 0 0 0 10px rgba(99,212,176,0); }
+  }
   .lesson .time{
     font-size:11.5px;
     font-weight:700;
@@ -425,6 +516,23 @@
 </div>
 
 <div class="container">
+
+  <!-- ===== CARD: BUỔI HỌC HIỆN TẠI ===== -->
+  <div class="current-card" id="currentCard">
+    <div class="current-tag"><span class="dot"></span> Buổi học hiện tại</div>
+    <div class="current-main">
+      <div>
+        <div class="current-title" id="currentTitle">—</div>
+        <div class="current-meta" id="currentMeta"></div>
+      </div>
+      <div class="current-progress" id="currentProgress">
+        <div class="num" id="currentNum">—</div>
+        <div class="lbl" id="currentLbl">trống</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CARD: BUỔI HỌC SẮP TỚI ===== -->
   <div class="next-card" id="nextCard">
     <div class="next-tag"><span class="dot"></span> Buổi học sắp tới</div>
     <div class="next-main">
@@ -523,6 +631,9 @@
     { key:"toi", label:"🌙 Buổi tối", from:17*60, to:24*60+1 }
   ];
 
+  // Bảng ánh xạ getDay() (0=CN..6=T7) -> key của DAYS
+  var DAY_KEY_BY_INDEX = ["cn","t2","t3","t4","t5","t6","t7"];
+
   // ================================================================
   // DỮ LIỆU THỜI KHÓA BIỂU MẶC ĐỊNH
   // Chỉ dùng cho lần đầu truy cập. Sau khi người dùng sửa/xoá,
@@ -597,12 +708,10 @@
     }catch(e){}
 
     if(!initialized){
-      // Lần đầu truy cập trên máy này → dùng dữ liệu mặc định
       applyParsedState(DEFAULT_SCHEDULE);
       try{ localStorage.setItem(STORAGE_INIT_FLAG, "1"); }catch(e){}
       saveSchedule();
     } else {
-      // Đã từng dùng → đọc từ localStorage (kể cả khi rỗng)
       try{
         var raw = localStorage.getItem(STORAGE_KEY);
         var parsed = raw ? JSON.parse(raw) : null;
@@ -635,6 +744,11 @@
     if(!t) return 0;
     var parts = t.split(":");
     return parseInt(parts[0],10)*60 + parseInt(parts[1],10);
+  }
+
+  function dayLabelOf(key){
+    for(var i=0;i<DAYS.length;i++){ if(DAYS[i].key === key) return DAYS[i].label; }
+    return key;
   }
 
   function fillDaySelect(){
@@ -748,6 +862,7 @@
       board.appendChild(col);
     });
 
+    updateCurrentLesson();
     updateNextLesson();
   }
 
@@ -758,6 +873,76 @@
   function saveNotified(){
     try{ sessionStorage.setItem("tkb-notified", JSON.stringify(notifiedKeys)); }catch(e){}
   }
+
+  // ================== BUỔI HỌC HIỆN TẠI ==================
+  function getCurrentLesson(){
+    var now = new Date();
+    var nowMin = now.getHours()*60 + now.getMinutes();
+    var todayKey = DAY_KEY_BY_INDEX[now.getDay()];
+    var list = state.schedule[todayKey] || [];
+    for(var i=0;i<list.length;i++){
+      var l = list[i];
+      if(!l.start || !l.end) continue;
+      var s = timeToMinutes(l.start);
+      var e = timeToMinutes(l.end);
+      if(e <= s) continue; // dữ liệu lỗi
+      if(nowMin >= s && nowMin < e){
+        return { lesson: l, dayKey: todayKey, nowMin: nowMin, startMin: s, endMin: e };
+      }
+    }
+    return null;
+  }
+
+  function updateCurrentLesson(){
+    var card = document.getElementById("currentCard");
+    var now = new Date();
+    var nowMin = now.getHours()*60 + now.getMinutes();
+    var todayKey = DAY_KEY_BY_INDEX[now.getDay()];
+    var todayLabel = dayLabelOf(todayKey);
+    var hhmm = String(now.getHours()).padStart(2,"0") + ":" + String(now.getMinutes()).padStart(2,"0");
+
+    // Bỏ highlight "đang học" cũ
+    document.querySelectorAll(".lesson.is-current").forEach(function(el){ el.classList.remove("is-current"); });
+
+    var cur = getCurrentLesson();
+
+    if(!cur){
+      // === KHÔNG CÓ LỊCH HỌC ===
+      card.classList.add("empty");
+      document.getElementById("currentTitle").textContent = "Không có lịch học";
+      document.getElementById("currentMeta").innerHTML =
+        "<span>📅 " + escapeHtml(todayLabel) + "</span>" +
+        "<span>🕐 Bây giờ " + hhmm + "</span>";
+      document.getElementById("currentNum").textContent = "—";
+      document.getElementById("currentLbl").textContent = "trống";
+      return;
+    }
+
+    // === ĐANG TRONG GIỜ HỌC ===
+    card.classList.remove("empty");
+    var l = cur.lesson;
+    document.getElementById("currentTitle").textContent = l.subject || "(Chưa đặt tên)";
+
+    var bits = [todayLabel + " · " + (l.start||"") + "-" + (l.end||"")];
+    if(l.room) bits.push("📍 " + l.room);
+    if(l.teacher) bits.push("👤 " + l.teacher);
+    document.getElementById("currentMeta").innerHTML =
+      bits.map(function(m){ return "<span>"+escapeHtml(m)+"</span>"; }).join("");
+
+    var remain = cur.endMin - nowMin;
+    if(remain < 0) remain = 0;
+    var h = Math.floor(remain / 60);
+    var m = remain % 60;
+    var numStr = h > 0 ? (h + "h" + String(m).padStart(2,"0")) : String(m);
+    document.getElementById("currentNum").textContent = numStr;
+    document.getElementById("currentLbl").textContent = h > 0 ? "còn lại" : "phút nữa";
+
+    // Highlight thẻ đang học trên bảng
+    var sel = '.lesson[data-day-key="'+cur.dayKey+'"][data-lesson-id="'+l.id+'"]';
+    var cardEl = document.querySelector(sel);
+    if(cardEl) cardEl.classList.add("is-current");
+  }
+  // ======================================================
 
   function getNextLesson(){
     var now = new Date();
@@ -921,6 +1106,9 @@
     var dd = String(now.getDate()).padStart(2,"0");
     var mo = String(now.getMonth()+1).padStart(2,"0");
     document.getElementById("clockDate").textContent = days[now.getDay()] + ", " + dd + "/" + mo + "/" + now.getFullYear();
+
+    // Cập nhật card "buổi học hiện tại" mỗi giây cho countdown mượt
+    updateCurrentLesson();
   }
 
   document.getElementById("addBtn").addEventListener("click", function(){ openModal(null, DAYS[0].key); });
