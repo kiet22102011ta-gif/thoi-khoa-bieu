@@ -272,12 +272,6 @@
     height:1px;
     background: var(--card-border);
   }
-  .slot-empty{
-    font-size:11.5px;
-    color: var(--ink-soft);
-    opacity:0.55;
-    padding:2px 2px 4px;
-  }
 
   .lesson{
     position:relative;
@@ -500,10 +494,10 @@
     </div>
 
     <div class="modal-actions">
-  <button class="btn btn-danger" id="deleteInModalBtn" style="display:none; margin-right:auto;">🗑️ Xoá</button>
-  <button class="btn btn-ghost" id="cancelBtn">Huỷ</button>
-  <button class="btn btn-primary" id="saveBtn">Lưu lại</button>
-</div>
+      <button class="btn btn-danger" id="deleteInModalBtn" style="display:none; margin-right:auto;">🗑️ Xoá</button>
+      <button class="btn btn-ghost" id="cancelBtn">Huỷ</button>
+      <button class="btn btn-primary" id="saveBtn">Lưu lại</button>
+    </div>
   </div>
 </div>
 
@@ -522,6 +516,7 @@
   ];
   var COLORS = ["c1","c2","c3","c4","c5","c6"];
   var STORAGE_KEY = "tkb-toi-mau-toi-v1";
+  var STORAGE_INIT_FLAG = "tkb-toi-mau-toi-v1-initialized";
   var SLOTS = [
     { key:"sang", label:"☀️ Buổi sáng", from:0,    to:12*60 },
     { key:"chieu", label:"🌤️ Buổi chiều", from:12*60, to:17*60 },
@@ -529,395 +524,66 @@
   ];
 
   // ================================================================
-  // DỮ LIỆU THỜI KHÓA BIỂU CỦA BẠN ĐÃ ĐƯỢC NHÚNG SẴN Ở ĐÂY
-  // Mọi người truy cập vào sẽ thấy được dữ liệu này ngay
+  // DỮ LIỆU THỜI KHÓA BIỂU MẶC ĐỊNH
+  // Chỉ dùng cho lần đầu truy cập. Sau khi người dùng sửa/xoá,
+  // trình duyệt sẽ ưu tiên dữ liệu trong localStorage.
   // ================================================================
-  var DEFAULT_SCHEDULE ={
-  "t2": [
-    {
-      "id": "l_64q8oi4",
-      "start": "07:00",
-      "end": "07:45",
-      "subject": "SHDC",
-      "room": "Nhà thi đấu",
-      "teacher": "Thiện",
-      "color": "c1"
-    },
-    {
-      "id": "l_ea5mmp1",
-      "start": "07:50",
-      "end": "08:35",
-      "subject": "TNHN",
-      "room": "24",
-      "teacher": "Hạnh",
-      "color": "c1"
-    },
-    {
-      "id": "l_ipras4z",
-      "start": "09:40",
-      "end": "10:25",
-      "subject": "Tin 1",
-      "room": "24",
-      "teacher": "Phú",
-      "color": "c1"
-    },
-    {
-      "id": "l_pwt5vbp",
-      "start": "14:00",
-      "end": "16:30",
-      "subject": "BDHSG",
-      "room": "24 hoặc Phòng máy",
-      "teacher": "Phú",
-      "color": "c4"
-    },
-    {
-      "id": "l_w6ebrht",
-      "start": "08:50",
-      "end": "09:35",
-      "subject": "Tin 1",
-      "room": "24",
-      "teacher": "Phú",
-      "color": "c1"
-    },
-    {
-      "id": "l_d2nc0nx",
-      "start": "08:50",
-      "end": "09:35",
-      "subject": "Ngữ Văn",
-      "room": "24",
-      "teacher": "M.Linh",
-      "color": "c1"
-    },
-    {
-      "id": "l_hw42wj6",
-      "start": "19:30",
-      "end": "21:00",
-      "subject": "Vật Lý",
-      "room": "Trung Tâm Minh Châu",
-      "teacher": "Phước Bình",
-      "color": "c3"
-    }
-  ],
-  "t3": [
-    {
-      "id": "l_3869660",
-      "start": "07:00",
-      "end": "07:45",
-      "subject": "Toán",
-      "room": "24",
-      "teacher": "Toàn",
-      "color": "c1"
-    },
-    {
-      "id": "l_aevd8kv",
-      "start": "07:50",
-      "end": "08:35",
-      "subject": "Toán",
-      "room": "24",
-      "teacher": "Toàn",
-      "color": "c1"
-    },
-    {
-      "id": "l_857s9f9",
-      "start": "08:50",
-      "end": "09:35",
-      "subject": "Sinh",
-      "room": "24",
-      "teacher": "Lý",
-      "color": "c1"
-    },
-    {
-      "id": "l_jmhspzq",
-      "start": "09:40",
-      "end": "10:25",
-      "subject": "GDTC",
-      "room": "24",
-      "teacher": "Phương",
-      "color": "c1"
-    },
-    {
-      "id": "l_2108tku",
-      "start": "10:30",
-      "end": "11:15",
-      "subject": "TNHN",
-      "room": "24",
-      "teacher": "Thiện",
-      "color": "c1"
-    },
-    {
-      "id": "l_zr05ea1",
-      "start": "17:30",
-      "end": "19:00",
-      "subject": "Học thêm Hóa",
-      "room": "Trung tâm Minh Châu",
-      "teacher": "Trọng",
-      "color": "c3"
-    }
-  ],
-  "t4": [
-    {
-      "id": "l_uzk3alx",
-      "start": "07:00",
-      "end": "07:45",
-      "subject": "Vật Lý",
-      "room": "24",
-      "teacher": "Hiệp",
-      "color": "c1"
-    },
-    {
-      "id": "l_0h6gihd",
-      "start": "07:50",
-      "end": "08:35",
-      "subject": "Vật Lý",
-      "room": "24",
-      "teacher": "Hiệp",
-      "color": "c1"
-    },
-    {
-      "id": "l_vdyb6gy",
-      "start": "08:50",
-      "end": "09:35",
-      "subject": "Tin 1",
-      "room": "24",
-      "teacher": "Phú",
-      "color": "c1"
-    },
-    {
-      "id": "l_yrn56k9",
-      "start": "09:40",
-      "end": "10:25",
-      "subject": "Tin 1",
-      "room": "24",
-      "teacher": "Phú",
-      "color": "c1"
-    },
-    {
-      "id": "l_haw7uat",
-      "start": "10:30",
-      "end": "11:15",
-      "subject": "Tiếng Anh",
-      "room": "24",
-      "teacher": "Hạnh",
-      "color": "c1"
-    },
-    {
-      "id": "l_jld5mml",
-      "start": "19:30",
-      "end": "21:00",
-      "subject": "Học thêm Hóa",
-      "room": "Trung Tâm Minh Châu",
-      "teacher": "Trọng",
-      "color": "c3"
-    },
-    {
-      "id": "l_5bg2p2l",
-      "start": "14:00",
-      "end": "16:30",
-      "subject": "BDHSG",
-      "room": "Phòng Máy hoặc 24",
-      "teacher": "Phú",
-      "color": "c4"
-    }
-  ],
-  "t5": [
-    {
-      "id": "l_u3mr4jk",
-      "start": "07:00",
-      "end": "07:45",
-      "subject": "Toán",
-      "room": "24",
-      "teacher": "Toàn",
-      "color": "c1"
-    },
-    {
-      "id": "l_3ayk80z",
-      "start": "07:50",
-      "end": "08:35",
-      "subject": "Toán",
-      "room": "24",
-      "teacher": "Toàn",
-      "color": "c1"
-    },
-    {
-      "id": "l_o0r2bru",
-      "start": "08:50",
-      "end": "09:35",
-      "subject": "Sinh",
-      "room": "24",
-      "teacher": "Lý",
-      "color": "c1"
-    },
-    {
-      "id": "l_r5s1hu5",
-      "start": "09:40",
-      "end": "10:25",
-      "subject": "Hóa",
-      "room": "24",
-      "teacher": "Trung",
-      "color": "c1"
-    },
-    {
-      "id": "l_mnq3qie",
-      "start": "10:30",
-      "end": "11:15",
-      "subject": "Vật Lý",
-      "room": "24",
-      "teacher": "Hiệp",
-      "color": "c1"
-    },
-    {
-      "id": "l_490c0ij",
-      "start": "17:30",
-      "end": "19:00",
-      "subject": "Toán",
-      "room": "Trung Tâm Minh Châu",
-      "teacher": "Vương",
-      "color": "c3"
-    },
-    {
-      "id": "l_dt85iry",
-      "start": "19:30",
-      "end": "21:00",
-      "subject": "Vật Lý",
-      "room": "Trung Tâm Minh Châu",
-      "teacher": "Phước Bình",
-      "color": "c3"
-    }
-  ],
-  "t6": [
-    {
-      "id": "l_4ler2u5",
-      "start": "14:00",
-      "end": "16:30",
-      "subject": "BDHSG",
-      "room": "24",
-      "teacher": "Phú",
-      "color": "c4"
-    },
-    {
-      "id": "l_0p2ideh",
-      "start": "07:00",
-      "end": "07:45",
-      "subject": "GDQP - AN",
-      "room": "24",
-      "teacher": "Thầy Trân",
-      "color": "c1"
-    },
-    {
-      "id": "l_xlh11yp",
-      "start": "07:50",
-      "end": "08:30",
-      "subject": "Tin",
-      "room": "24",
-      "teacher": "Phú",
-      "color": "c1"
-    },
-    {
-      "id": "l_autktyx",
-      "start": "08:50",
-      "end": "09:30",
-      "subject": "Tin",
-      "room": "24",
-      "teacher": "Phú",
-      "color": "c1"
-    },
-    {
-      "id": "l_ltph1si",
-      "start": "09:40",
-      "end": "10:25",
-      "subject": "Hóa",
-      "room": "24",
-      "teacher": "Trung",
-      "color": "c1"
-    },
-    {
-      "id": "l_m7m5ya4",
-      "start": "10:30",
-      "end": "11:15",
-      "subject": "Lịch Sử",
-      "room": "",
-      "teacher": "Đức",
-      "color": "c1"
-    }
-  ],
-  "t7": [
-    {
-      "id": "l_68bm731",
-      "start": "07:00",
-      "end": "07:45",
-      "subject": "Tiếng Anh",
-      "room": "24",
-      "teacher": "Hạnh",
-      "color": "c1"
-    },
-    {
-      "id": "l_bsljc9s",
-      "start": "07:50",
-      "end": "08:35",
-      "subject": "Tiếng Anh",
-      "room": "24",
-      "teacher": "Hạnh",
-      "color": "c1"
-    },
-    {
-      "id": "l_mwx0j0i",
-      "start": "08:50",
-      "end": "09:35",
-      "subject": "GDTC",
-      "room": "24",
-      "teacher": "Phương",
-      "color": "c1"
-    },
-    {
-      "id": "l_ryhysjz",
-      "start": "09:40",
-      "end": "10:25",
-      "subject": "Ngữ Văn",
-      "room": "24",
-      "teacher": "M.Linh",
-      "color": "c1"
-    },
-    {
-      "id": "l_pl74npj",
-      "start": "10:30",
-      "end": "11:15",
-      "subject": "Ngữ Văn",
-      "room": "24",
-      "teacher": "M.Linh",
-      "color": "c1"
-    },
-    {
-      "id": "l_mjabdge",
-      "start": "20:00",
-      "end": "21:30",
-      "subject": "Tiếng Anh",
-      "room": "At home",
-      "teacher": "Bảo Hân",
-      "color": "c3"
-    }
-  ],
-  "cn": [
-    {
-      "id": "l_44chli1",
-      "start": "08:00",
-      "end": "10:00",
-      "subject": "Tiếng Anh",
-      "room": "At Home",
-      "teacher": "Bảo Hân",
-      "color": "c1"
-    },
-    {
-      "id": "l_bu8c3z7",
-      "start": "19:30",
-      "end": "21:00",
-      "subject": "Toán",
-      "room": "At Home",
-      "teacher": "Vương",
-      "color": "c3"
-    }
-  ]
-}
-  ]
+  var DEFAULT_SCHEDULE = {
+    "t2": [
+      { "id": "l_64q8oi4", "start": "07:00", "end": "07:45", "subject": "SHDC", "room": "Nhà thi đấu", "teacher": "Thiện", "color": "c1" },
+      { "id": "l_ea5mmp1", "start": "07:50", "end": "08:35", "subject": "TNHN", "room": "24", "teacher": "Hạnh", "color": "c1" },
+      { "id": "l_ipras4z", "start": "09:40", "end": "10:25", "subject": "Tin 1", "room": "24", "teacher": "Phú", "color": "c1" },
+      { "id": "l_pwt5vbp", "start": "14:00", "end": "16:30", "subject": "BDHSG", "room": "24 hoặc Phòng máy", "teacher": "Phú", "color": "c4" },
+      { "id": "l_w6ebrht", "start": "08:50", "end": "09:35", "subject": "Tin 1", "room": "24", "teacher": "Phú", "color": "c1" },
+      { "id": "l_d2nc0nx", "start": "08:50", "end": "09:35", "subject": "Ngữ Văn", "room": "24", "teacher": "M.Linh", "color": "c1" },
+      { "id": "l_hw42wj6", "start": "19:30", "end": "21:00", "subject": "Vật Lý", "room": "Trung Tâm Minh Châu", "teacher": "Phước Bình", "color": "c3" }
+    ],
+    "t3": [
+      { "id": "l_3869660", "start": "07:00", "end": "07:45", "subject": "Toán", "room": "24", "teacher": "Toàn", "color": "c1" },
+      { "id": "l_aevd8kv", "start": "07:50", "end": "08:35", "subject": "Toán", "room": "24", "teacher": "Toàn", "color": "c1" },
+      { "id": "l_857s9f9", "start": "08:50", "end": "09:35", "subject": "Sinh", "room": "24", "teacher": "Lý", "color": "c1" },
+      { "id": "l_jmhspzq", "start": "09:40", "end": "10:25", "subject": "GDTC", "room": "24", "teacher": "Phương", "color": "c1" },
+      { "id": "l_2108tku", "start": "10:30", "end": "11:15", "subject": "TNHN", "room": "24", "teacher": "Thiện", "color": "c1" },
+      { "id": "l_zr05ea1", "start": "17:30", "end": "19:00", "subject": "Học thêm Hóa", "room": "Trung tâm Minh Châu", "teacher": "Trọng", "color": "c3" }
+    ],
+    "t4": [
+      { "id": "l_uzk3alx", "start": "07:00", "end": "07:45", "subject": "Vật Lý", "room": "24", "teacher": "Hiệp", "color": "c1" },
+      { "id": "l_0h6gihd", "start": "07:50", "end": "08:35", "subject": "Vật Lý", "room": "24", "teacher": "Hiệp", "color": "c1" },
+      { "id": "l_vdyb6gy", "start": "08:50", "end": "09:35", "subject": "Tin 1", "room": "24", "teacher": "Phú", "color": "c1" },
+      { "id": "l_yrn56k9", "start": "09:40", "end": "10:25", "subject": "Tin 1", "room": "24", "teacher": "Phú", "color": "c1" },
+      { "id": "l_haw7uat", "start": "10:30", "end": "11:15", "subject": "Tiếng Anh", "room": "24", "teacher": "Hạnh", "color": "c1" },
+      { "id": "l_jld5mml", "start": "19:30", "end": "21:00", "subject": "Học thêm Hóa", "room": "Trung Tâm Minh Châu", "teacher": "Trọng", "color": "c3" },
+      { "id": "l_5bg2p2l", "start": "14:00", "end": "16:30", "subject": "BDHSG", "room": "Phòng Máy hoặc 24", "teacher": "Phú", "color": "c4" }
+    ],
+    "t5": [
+      { "id": "l_u3mr4jk", "start": "07:00", "end": "07:45", "subject": "Toán", "room": "24", "teacher": "Toàn", "color": "c1" },
+      { "id": "l_3ayk80z", "start": "07:50", "end": "08:35", "subject": "Toán", "room": "24", "teacher": "Toàn", "color": "c1" },
+      { "id": "l_o0r2bru", "start": "08:50", "end": "09:35", "subject": "Sinh", "room": "24", "teacher": "Lý", "color": "c1" },
+      { "id": "l_r5s1hu5", "start": "09:40", "end": "10:25", "subject": "Hóa", "room": "24", "teacher": "Trung", "color": "c1" },
+      { "id": "l_mnq3qie", "start": "10:30", "end": "11:15", "subject": "Vật Lý", "room": "24", "teacher": "Hiệp", "color": "c1" },
+      { "id": "l_490c0ij", "start": "17:30", "end": "19:00", "subject": "Toán", "room": "Trung Tâm Minh Châu", "teacher": "Vương", "color": "c3" },
+      { "id": "l_dt85iry", "start": "19:30", "end": "21:00", "subject": "Vật Lý", "room": "Trung Tâm Minh Châu", "teacher": "Phước Bình", "color": "c3" }
+    ],
+    "t6": [
+      { "id": "l_4ler2u5", "start": "14:00", "end": "16:30", "subject": "BDHSG", "room": "24", "teacher": "Phú", "color": "c4" },
+      { "id": "l_0p2ideh", "start": "07:00", "end": "07:45", "subject": "GDQP - AN", "room": "24", "teacher": "Thầy Trân", "color": "c1" },
+      { "id": "l_xlh11yp", "start": "07:50", "end": "08:30", "subject": "Tin", "room": "24", "teacher": "Phú", "color": "c1" },
+      { "id": "l_autktyx", "start": "08:50", "end": "09:30", "subject": "Tin", "room": "24", "teacher": "Phú", "color": "c1" },
+      { "id": "l_ltph1si", "start": "09:40", "end": "10:25", "subject": "Hóa", "room": "24", "teacher": "Trung", "color": "c1" },
+      { "id": "l_m7m5ya4", "start": "10:30", "end": "11:15", "subject": "Lịch Sử", "room": "", "teacher": "Đức", "color": "c1" }
+    ],
+    "t7": [
+      { "id": "l_68bm731", "start": "07:00", "end": "07:45", "subject": "Tiếng Anh", "room": "24", "teacher": "Hạnh", "color": "c1" },
+      { "id": "l_bsljc9s", "start": "07:50", "end": "08:35", "subject": "Tiếng Anh", "room": "24", "teacher": "Hạnh", "color": "c1" },
+      { "id": "l_mwx0j0i", "start": "08:50", "end": "09:35", "subject": "GDTC", "room": "24", "teacher": "Phương", "color": "c1" },
+      { "id": "l_ryhysjz", "start": "09:40", "end": "10:25", "subject": "Ngữ Văn", "room": "24", "teacher": "M.Linh", "color": "c1" },
+      { "id": "l_pl74npj", "start": "10:30", "end": "11:15", "subject": "Ngữ Văn", "room": "24", "teacher": "M.Linh", "color": "c1" },
+      { "id": "l_mjabdge", "start": "20:00", "end": "21:30", "subject": "Tiếng Anh", "room": "At home", "teacher": "Bảo Hân", "color": "c3" }
+    ],
+    "cn": [
+      { "id": "l_44chli1", "start": "08:00", "end": "10:00", "subject": "Tiếng Anh", "room": "At Home", "teacher": "Bảo Hân", "color": "c1" },
+      { "id": "l_bu8c3z7", "start": "19:30", "end": "21:00", "subject": "Toán", "room": "At Home", "teacher": "Vương", "color": "c3" }
+    ]
   };
   // ================================================================
 
@@ -925,23 +591,28 @@
   DAYS.forEach(function(d){ state.schedule[d.key] = []; });
 
   function loadSchedule(){
-    // Luôn bắt đầu bằng dữ liệu mặc định đã nhúng trong file
-    applyParsedState(DEFAULT_SCHEDULE);
-    
-    // Nếu người dùng đã từng sửa trên máy này, lấy dữ liệu đã lưu trong localStorage
+    var initialized = false;
     try{
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        var parsed = JSON.parse(raw);
-        // Chỉ dùng dữ liệu localStorage nếu có dữ liệu thực sự
-        var hasData = false;
-        DAYS.forEach(function(d){ if(parsed[d.key] && parsed[d.key].length > 0) hasData = true; });
-        if(hasData){
-          applyParsedState(parsed);
-        }
+      initialized = localStorage.getItem(STORAGE_INIT_FLAG) === "1";
+    }catch(e){}
+
+    if(!initialized){
+      // Lần đầu truy cập trên máy này → dùng dữ liệu mặc định
+      applyParsedState(DEFAULT_SCHEDULE);
+      try{ localStorage.setItem(STORAGE_INIT_FLAG, "1"); }catch(e){}
+      saveSchedule();
+    } else {
+      // Đã từng dùng → đọc từ localStorage (kể cả khi rỗng)
+      try{
+        var raw = localStorage.getItem(STORAGE_KEY);
+        var parsed = raw ? JSON.parse(raw) : null;
+        applyParsedState(parsed);
+      }catch(e){
+        console.warn("Không đọc được dữ liệu cũ", e);
+        applyParsedState({});
       }
-    }catch(e){ console.warn("Không đọc được dữ liệu cũ", e); }
-    
+    }
+
     renderAll();
   }
 
@@ -954,6 +625,7 @@
   function saveSchedule(){
     try{
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state.schedule));
+      localStorage.setItem(STORAGE_INIT_FLAG, "1");
     }catch(e){ console.warn("Không lưu được", e); }
   }
 
@@ -1255,6 +927,16 @@
   document.getElementById("cancelBtn").addEventListener("click", closeModal);
   document.getElementById("overlay").addEventListener("click", function(e){
     if(e.target.id === "overlay") closeModal();
+  });
+
+  document.getElementById("deleteInModalBtn").addEventListener("click", function(){
+    var editId = document.getElementById("editId").value;
+    var dayKey = document.getElementById("fDay").value;
+    if(!editId) return;
+    if(confirm("Bạn chắc chắn muốn xoá buổi học này?")){
+      deleteLesson(dayKey, editId);
+      closeModal();
+    }
   });
 
   document.getElementById("saveBtn").addEventListener("click", function(){
